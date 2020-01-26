@@ -1,8 +1,87 @@
 import csv
+import sqlite3
 
-with open('employees.csv') as f_object:
-    f_object = csv.reader(f_object)
-    data = [row for row in f_object]
+#get data from csv file
+with open('employees.csv', newline= '') as f_object:
+    data = [row for row in csv.reader(f_object)]
+    users_data = [[row[0], row[4], row[5]] for row in data]
+    phone_numbers_data = [row[1:4] for row in data]
 
+#Connect to database
+with sqlite3.connect('employees.db') as connection:
+    cursor = connection.cursor()
 
-print(data[1])
+    employees = """DROP TABLE IF EXISTS employees"""
+    cursor.execute(employees)
+
+    #Create table employees that takes ALL the data from csv
+    employees = """CREATE TABLE employees (
+        pk INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(32),
+        cellphone CHAR(12),
+        homephone CHAR(12),
+        workphone CHAR(12),
+        email VARCHAR(50),
+        country VARCHAR(20)
+        );"""
+    cursor.execute(employees)
+
+    #some of the rows have 7 columns rather than 6
+    s = slice(6)
+
+    for row in data:
+
+        cursor.execute(f"""INSERT INTO employees (
+            name, cellphone, homephone, workphone, email, country
+            ) VALUES (
+            ?,?,?,?,?,?);""", row[s])
+        
+        #OperationalError: no such column: name
+        # cursor.execute(f"""INSERT INTO employees (
+        #     name, cellphone, homephone, workphone, email, country
+        #     ) VALUES (
+        #     {row[0]}, {row[1]}, {row[2]}, {row[3]}, {row[4]}, {row[5]});""")
+
+#Create table users that takes user data except phone numbers
+with sqlite3.connect('users.db') as connection:
+    cursor = connection.cursor()
+
+    users = """DROP TABLE IF EXISTS users"""
+    cursor.execute(users)
+
+    users = """CREATE TABLE users (
+        pk INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(32),
+        email VARCHAR(50),
+        country VARCHAR(50)
+        );"""
+    cursor.execute(users)
+
+    for row in users_data:
+
+        cursor.execute(f"""INSERT INTO users (
+                name, email, country
+                ) VALUES (
+                ?,?,?);""", row)
+
+#Create table phone_number that takes phone number data
+with sqlite3.connect('phone_numbers.db') as connection:
+    cursor = connection.cursor()
+
+    phone_numbers = """DROP TABLE IF EXISTS phone_numbers"""
+    cursor.execute(phone_numbers)
+
+    phone_numbers = """CREATE TABLE phone_numbers (
+        pk INTEGER PRIMARY KEY AUTOINCREMENT,
+        cellphone CHAR(12),
+        homephone CHAR(12),
+        workphone CHAR(12)
+        );"""
+    cursor.execute(phone_numbers)
+
+    for row in phone_numbers_data:
+
+        cursor.execute(f"""INSERT INTO phone_numbers (
+                cellphone, homephone, workphone
+                ) VALUES (
+                ?,?,?);""", row)
