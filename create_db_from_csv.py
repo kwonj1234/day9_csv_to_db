@@ -85,3 +85,21 @@ with sqlite3.connect('phone_numbers.db') as connection:
                 cellphone, homephone, workphone
                 ) VALUES (
                 ?,?,?);""", row)
+
+#People who live in Grenada
+"""Jimmy Hendricks
+Ginger Noble
+Stefanie Dunn"""
+
+#People who live in Korea
+"""Marian Mcpherson
+Chas Coffey
+Felipe Lozano
+Marianne Chase
+Rosella Adams
+Richard Hinton
+Duncan Sandoval"""
+
+#People whose full name contain the name Cindy
+#SELECT name FROM users WHERE name LIKE "%cindy%"
+"""Cindy John"""
