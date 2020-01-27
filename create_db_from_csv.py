@@ -41,6 +41,7 @@ with sqlite3.connect('employees.db') as connection:
         #     name, cellphone, homephone, workphone, email, country
         #     ) VALUES (
         #     {row[0]}, {row[1]}, {row[2]}, {row[3]}, {row[4]}, {row[5]});""")
+    connection.commit()
 
 #Create table users that takes user data except phone numbers
 with sqlite3.connect('users.db') as connection:
@@ -63,6 +64,7 @@ with sqlite3.connect('users.db') as connection:
                 name, email, country
                 ) VALUES (
                 ?,?,?);""", row)
+    connection.commit()
 
 #Create table phone_number that takes phone number data
 with sqlite3.connect('phone_numbers.db') as connection:
@@ -81,10 +83,23 @@ with sqlite3.connect('phone_numbers.db') as connection:
 
     for row in phone_numbers_data:
 
-        cursor.execute(f"""INSERT INTO phone_numbers (
+        cursor.execute("""INSERT INTO phone_numbers (
                 cellphone, homephone, workphone
                 ) VALUES (
                 ?,?,?);""", row)
+    connection.commit()
+
+with sqlite3.connect('users.db') as connection:
+    cursor = connection.cursor()
+
+    cursor.execute("""SELECT name FROM users WHERE country == "Grenada" """)
+    live_in_grenda = cursor.fetchall()
+
+    cursor.execute("""SELECT name FROM users WHERE country == "Korea" """)
+    live_in_korea = cursor.fetchall()
+
+    cursor.execute("""SELECT name FROM users WHERE name LIKE "%cindy%" """)
+    cindy = cursor.fetchall()
 
 #People who live in Grenada
 """Jimmy Hendricks
